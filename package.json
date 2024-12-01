@@ -1,0 +1,32 @@
+{
+  "name": "aoc2024",
+  "version": "1.0.0",
+  "description": "Advent of Code 2024 solutions",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darrenortiz77/aoc2024.git"
+  },
+  "keywords": [
+    "advent",
+    "code",
+    "2024",
+    "aoc",
+    "javascript",
+    "typescript",
+    "algorithms"
+  ],
+  "author": "Darren Ortiz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/darrenortiz77/aoc2024/issues"
+  },
+  "homepage": "https://github.com/darrenortiz77/aoc2024#readme",
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
