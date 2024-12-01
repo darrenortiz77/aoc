@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -27,6 +29,18 @@
   },
   "homepage": "https://github.com/darrenortiz77/aoc2024#readme",
   "devDependencies": {
-    "typescript": "^5.7.2"
+    "@eslint/js": "^9.16.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "fast-glob": "^3.3.2",
+    "globals": "^15.12.0",
+    "postcss": "^8.4.49",
+    "prettier": "^3.4.1",
+    "tailwindcss": "^3.4.15",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.16.0",
+    "vite": "^6.0.1"
   }
 }

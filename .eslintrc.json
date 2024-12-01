@@ -1,0 +1,13 @@
+{
+  "extends": ["next/core-web-vitals", "next/typescript", "plugin:tailwindcss/recommended"],
+  "rules": {
+    "tailwindcss/classnames-order": "error",
+    "tailwindcss/no-custom-classname": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.js"],
+      "parser": "@typescript-eslint/parser"
+    }
+  ]
+}
