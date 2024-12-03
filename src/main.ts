@@ -2,7 +2,7 @@ import CodeRunner from './CodeRunner';
 import './style.css'
 
 // Create a map of dynamic imports
-const dayModules = import.meta.glob('./day*/*.ts');
+const dayModules = import.meta.glob('./20*/day*/*.ts');
 
 const inputField = document.getElementById('input') as HTMLTextAreaElement;
 const daySelect = document.getElementById('day') as HTMLSelectElement;

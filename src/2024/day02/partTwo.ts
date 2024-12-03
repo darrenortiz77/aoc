@@ -8,7 +8,7 @@
  * 3. If there's a failure point anywhere, work your way backward from that point and test the same level but with one index removed.
  */
 
-import CodeRunner from "../CodeRunner";
+import CodeRunner from "../../CodeRunner";
 
 export default class DayTwoPartOne extends CodeRunner {
   public run(input?: string) {

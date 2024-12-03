@@ -7,7 +7,7 @@
  * And that it's consistent in terms of ascending/descending.
  */
 
-import CodeRunner from "../CodeRunner";
+import CodeRunner from "../../CodeRunner";
 
 export default class DayTwoPartOne extends CodeRunner {
   public run(input?: string) {

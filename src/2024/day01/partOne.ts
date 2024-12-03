@@ -10,7 +10,7 @@
  * Note: I tried a min-heap initially since I thought that would be faster than sorting, but I was wrong. It was about 2ms slower.
  */
 
-import CodeRunner from "../CodeRunner";
+import CodeRunner from "../../CodeRunner";
 
 export default class DayOnePartOne extends CodeRunner {
   public run(input?: string) {

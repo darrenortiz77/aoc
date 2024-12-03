@@ -8,7 +8,7 @@
  * 4. Loop over left nums and sum the frequency of that number times itself.
  */
 
-import CodeRunner from "../CodeRunner";
+import CodeRunner from "../../CodeRunner";
 
 export default class DayOnePartTwo extends CodeRunner {
   public run(input?: string) {

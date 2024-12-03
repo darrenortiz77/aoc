@@ -16,7 +16,7 @@ export default defineConfig({
 			input: {
 				main: './index.html',
 				...Object.fromEntries(
-					fg.sync('./src/day*/*.ts').map(file => [
+					fg.sync('./src/**/*.ts').map(file => [
 						file.replace('./src/', '').replace('.ts', ''),
 						resolve(__dirname, file)
 					])
