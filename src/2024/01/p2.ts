@@ -8,22 +8,28 @@
  * 4. Loop over left nums and sum the frequency of that number times itself.
  */
 
-import CodeRunner from "../../CodeRunner";
+import AOCBase from "../../AOCBase";
 
-export default class DayOnePartTwo extends CodeRunner {
-  public run(input?: string) {
+export default class Solution implements AOCBase {
+  readonly sampleInput = `3   4
+4   3
+2   5
+1   3
+3   9
+3   3`;
+
+  public parseInput(input?: string) {
     if (!input) {
-      input = `3   4
-        4   3
-        2   5
-        1   3
-        3   9
-        3   3`;
+      input = this.sampleInput;
     }
-    
+
+    return input.split('\n');
+  }
+
+  public solve(input?: string) {    
     const performanceStart = performance.now();
 
-    const lines = input.split('\n');
+    const lines = this.parseInput(input);
 
     const leftList: number[] = [];
     const frequencyMap = new Map<number, number>();

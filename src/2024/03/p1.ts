@@ -4,15 +4,23 @@
  * General solution: RegEx baby!
  */
 
-import CodeRunner from "../../CodeRunner";
+import AOCBase from "../../AOCBase";
 
-export default class DayThreePartOne extends CodeRunner {
-  public run(input?: string) {
+export default class Solution implements AOCBase {
+  readonly sampleInput = `xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))`;
+
+  public parseInput(input?: string) {
     if (!input) {
-      input = `xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))`;
+      input = this.sampleInput;
     }
-    
+
+    return input;
+  }
+
+  public solve(input?: string) {
     const performanceStart = performance.now();
+
+    input = this.parseInput(input);
     
     const matches = input.matchAll(/mul\((\d{1,3}),(\d{1,3})\)/g);
     let sum = 0;

@@ -10,7 +10,7 @@
  * 6. Either way, remember that we found a midpoint.
  */
 
-import CodeRunner from "../../CodeRunner";
+import AOCBase from "../../AOCBase";
 
 enum Dir {
   All,
@@ -20,14 +20,12 @@ enum Dir {
   TL
 }
 
-export default class DayFourPartTwo extends CodeRunner {
+export default class Solution implements AOCBase {
   static readonly WORD = 'MAS';
   private numFound = 0;
   private midPoints = new Set<string>();
 
-  public run(input?: string) {
-    if (!input) {
-      input = `MMMSXXMASM
+  readonly sampleInput = `MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
 MSAMASMSMX
@@ -37,11 +35,19 @@ SMSMSASXSS
 SAXAMASAAA
 MAMMMXMMMM
 MXMXAXMASX`;
+
+  public parseInput(input?: string) {
+    if (!input) {
+      input = this.sampleInput;
     }
-    
+
+    return input.split('\n').map(line => line.split(''));
+  }
+
+  public solve(input?: string) {
     const performanceStart = performance.now();
 
-    const matrix = input.split('\n').map(line => line.split(''));
+    const matrix = this.parseInput(input);
 
     for (let row = 0; row <= matrix.length; row++) {
       for (let col = 0; col < matrix[0].length; col++) {
@@ -66,12 +72,12 @@ MXMXAXMASX`;
     }
 
     const currentLetter = matrix[row][col];
-    const targetLetter = DayFourPartTwo.WORD.charAt(charIdx);
+    const targetLetter = Solution.WORD.charAt(charIdx);
 
     if (currentLetter === targetLetter) {
-      if (charIdx === Math.floor(DayFourPartTwo.WORD.length/2)) {
+      if (charIdx === Math.floor(Solution.WORD.length/2)) {
         midPtPos = [row, col];
-      } else if (charIdx === DayFourPartTwo.WORD.length-1) {
+      } else if (charIdx === Solution.WORD.length-1) {
         this.checkIfValid(midPtPos!);
         return;
       }

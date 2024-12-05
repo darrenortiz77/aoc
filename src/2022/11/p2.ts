@@ -2,16 +2,22 @@
  * https://adventofcode.com/2022/day/11
  *
  * General solution:
+ * Needed to google for hints. The math was above my head.
+ * But it comes down to this:
+ * - if a number (n) is divisible by some other number (P), then any other multiple of P will also work.
+ * - so if n % P == 0, then n % 2P == 0 and n % 3P == 0, etc...
+ * - the worry level increases so fast that we quickly run out of memory so we need to do something to bring it down, but without affecting the rest of the math
+ * - the key is to figure out a multiple of P that works for all monkeys. So basically just a common multiplier for all test conditions.
+ * - it doesn't even have to be the lowest common denominator, it just needs to be any number that all of the test conditions can equally divide by
+ * - the easiest way to get that common multiplier is to start with 1 and multiply that by each of the monkey's test conditions.
+ * - then we can reduce the worry level to something manageable by just moduloiung it by that number.
+ * - see lines 63 and 150
  */
 
-import CodeRunner from "../../CodeRunner";
+import AOCBase from "../../AOCBase";
 
-export default class DayElevenPartOne extends CodeRunner {
-	private monkeys: Monkey[] = [];
-
-  public run(input?: string) {
-    if (!input) {
-      input = `Monkey 0:
+export default class Solution implements AOCBase {
+	readonly sampleInput = `Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
   Test: divisible by 23
@@ -38,10 +44,21 @@ Monkey 3:
   Test: divisible by 17
     If true: throw to monkey 0
     If false: throw to monkey 1`;
+
+	private monkeys: Monkey[] = [];
+	private modulo = 1;
+
+	public parseInput(input?: string) {
+    if (!input) {
+      input = this.sampleInput;
     }
-    
+
+    return input.split('\n');
+  }
+
+  public solve(input?: string) {
     const performanceStart = performance.now();
-    const lines = input.split('\n');
+    const lines = this.parseInput(input);
 
 		for (let i=0; i < lines.length; i += 7) {
 			const items = lines[i+1].split(': ')[1].split(', ').map(n => +n);
@@ -50,14 +67,16 @@ Monkey 3:
 			const monkeyDestTrue = +lines[i+4].match(/\b\d+?\b/)![0];
 			const monkeyDestFalse = +lines[i+5].match(/\b\d+?\b/)![0];
 			const monkey = new Monkey({items, operation, testCondition, monkeyDestTrue, monkeyDestFalse});
+			this.modulo *= testCondition;
 			this.monkeys.push(monkey);
 		}
 
-		for (let i=0; i < 20; i++) {
+		for (let i=0; i < 10_000; i++) {
 			this.processRound();
 		}
 
 		const inspectionAmounts = this.monkeys.map(monkey => monkey.timesInspected);
+		// inspectionAmounts.forEach(amt => console.log(amt));
 		inspectionAmounts.sort((a,b) => b-a);
 
     return {
@@ -69,7 +88,7 @@ Monkey 3:
 	private processRound() {
 		this.monkeys.forEach(monkey => {
 			while (monkey.hasItems) {
-				const {targetMonkey, item} = monkey.inspectItem();
+				const {targetMonkey, item} = monkey.inspectItem(this.modulo);
 				this.monkeys[targetMonkey].addItem(item);
 			}
 		});
@@ -112,7 +131,7 @@ class Monkey {
 		return this._timesInspected;
 	}
 
-	public inspectItem() {
+	public inspectItem(modulo: number) {
 		this._timesInspected++;
 
 		let item = this._items.shift()!;
@@ -134,7 +153,7 @@ class Monkey {
 				break;
 		}
 
-		item = Math.floor(item / 3);
+		item = item % modulo;
 
 		const targetMonkey = (item % this.testCondition === 0) ? this.monkeyDestTrue : this.monkeyDestFalse;
 

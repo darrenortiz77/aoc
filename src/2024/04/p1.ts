@@ -7,7 +7,7 @@
  * 3. If the next letter is found, keep searching in that direction until we find the whole word.
  */
 
-import CodeRunner from "../../CodeRunner";
+import AOCBase from "../../AOCBase";
 
 enum Dir {
   All,
@@ -21,13 +21,11 @@ enum Dir {
   TL
 }
 
-export default class DayFourPartOne extends CodeRunner {
+export default class Solution implements AOCBase {
   static readonly WORD = 'XMAS';
   private numFound = 0;
 
-  public run(input?: string) {
-    if (!input) {
-      input = `MMMSXXMASM
+  readonly sampleInput = `MMMSXXMASM
 MSAMXMSMSA
 AMXSXMAAMM
 MSAMASMSMX
@@ -37,11 +35,19 @@ SMSMSASXSS
 SAXAMASAAA
 MAMMMXMMMM
 MXMXAXMASX`;
+
+  public parseInput(input?: string) {
+    if (!input) {
+      input = this.sampleInput;
     }
-    
+
+    return input.split('\n').map(line => line.split(''));
+  }
+
+  public solve(input?: string) {    
     const performanceStart = performance.now();
 
-    const matrix = input.split('\n').map(line => line.split(''));
+    const matrix = this.parseInput(input);
 
     for (let row = 0; row <= matrix.length; row++) {
       for (let col = 0; col < matrix[0].length; col++) {
@@ -66,10 +72,10 @@ MXMXAXMASX`;
     }
 
     const currentLetter = matrix[row][col];
-    const targetLetter = DayFourPartOne.WORD.charAt(charIdx);
+    const targetLetter = Solution.WORD.charAt(charIdx);
 
     if (currentLetter === targetLetter) {
-      if (charIdx === DayFourPartOne.WORD.length-1) {
+      if (charIdx === Solution.WORD.length-1) {
         this.numFound++;
         return;
       }

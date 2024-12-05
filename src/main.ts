@@ -1,4 +1,4 @@
-import CodeRunner from './CodeRunner';
+import AOCBase from './AOCBase';
 import './style.css'
 
 // Create a map of dynamic imports
@@ -19,9 +19,9 @@ form?.addEventListener('submit', async (e: SubmitEvent) => {
 
   try {
     const modulePath = `./${daySelect.value}.ts`;
-    const module = await dayModules[modulePath]() as { default: new () => CodeRunner };
+    const module = await dayModules[modulePath]() as { default: new () => AOCBase };
     const codeRunner = new module.default();
-    const {performance, result} = codeRunner.run(inputField.value);
+    const {performance, result} = codeRunner.solve(inputField.value);
     runtimeElm.innerHTML = `${performance.toFixed(2)}ms`;
     colorCodePerformanceResult(performance);
     resultElm.innerHTML = `${result}`;

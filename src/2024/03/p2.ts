@@ -7,17 +7,23 @@
  * 3. Loop over those matches and do the same regex as we did in part one. i.e.: Look for `mul(<nnn>,<nnn>)` and capture the numbers for easy retrieval.
  */
 
-import CodeRunner from "../../CodeRunner";
+import AOCBase from "../../AOCBase";
 
-export default class DayThreePartTwo extends CodeRunner {
-  public run(input?: string) {
+export default class Solution implements AOCBase {
+  readonly sampleInput = `xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))`;
+
+  public parseInput(input?: string) {
     if (!input) {
-      input = `xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))`;
+      input = this.sampleInput;
     }
-    
-    input = input.split('\n').join('');
 
+    return input.split('\n').join('');
+  }
+
+  public solve(input?: string) {
     const performanceStart = performance.now();
+    
+    input = this.parseInput(input);
     
     const reOuter = /(?:^|(?:do\(\))).*?(?:(?:don't\(\))|$)/g;
     const reInner = /mul\((\d{1,3}),(\d{1,3})\)/g;

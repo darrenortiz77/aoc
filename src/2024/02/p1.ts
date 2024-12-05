@@ -7,21 +7,28 @@
  * And that it's consistent in terms of ascending/descending.
  */
 
-import CodeRunner from "../../CodeRunner";
+import AOCBase from "../../AOCBase";
 
-export default class DayTwoPartOne extends CodeRunner {
-  public run(input?: string) {
+export default class Solution implements AOCBase {
+  readonly sampleInput = `7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9`;
+
+  public parseInput(input?: string) {
     if (!input) {
-      input = `7 6 4 2 1
-        1 2 7 8 9
-        9 7 6 2 1
-        1 3 2 4 5
-        8 6 4 4 1
-        1 3 6 7 9`;
+      input = this.sampleInput;
     }
-    
+
+    return input.split('\n').map(line => line.trim().split(' ').map(n => +n));
+  }
+
+  public solve(input?: string) {    
     const performanceStart = performance.now();
-    const levels = input.split('\n').map(line => line.trim().split(' ').map(n => +n));
+    
+    const levels = this.parseInput(input);
 
     let numSafe = 0;
 
