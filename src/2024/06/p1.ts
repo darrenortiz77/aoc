@@ -2,6 +2,7 @@
  * https://adventofcode.com/2024/day/6
  *
  * General solution:
+ * Just walk the path and remember visited positions in a Set.
  */
 
 import AOCBase from "../../AOCBase";
