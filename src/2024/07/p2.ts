@@ -1,5 +1,5 @@
 /**
- * https://adventofcode.com/2024/day/xx
+ * https://adventofcode.com/2024/day/7
  *
  * General solution:
  * Exactly the same as part 1, except with just one more possible operator.

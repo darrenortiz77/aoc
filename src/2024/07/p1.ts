@@ -1,5 +1,5 @@
 /**
- * https://adventofcode.com/2024/day/xx
+ * https://adventofcode.com/2024/day/7
  *
  * General solution:
  * 1. Create a graph of all possible combination of operators.
