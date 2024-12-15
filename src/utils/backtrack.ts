@@ -10,7 +10,7 @@ const defaultCheckForValid = <T>(current: T, target: T) => {
 	return null;
 };
 
-const defaultUpdateCurrent = <T, C>(current: T, candidate: C): T => {
+const defaultUpdateCurrent = <T, C>(current: T, candidate: C, temp: C[]): T => {
 	return (current as number) + (candidate as number) as T;
 };
 
@@ -28,7 +28,7 @@ export const backtracker = <C, T>(
 	initial: T, 
 	target: T, 
 	checkForValid: (current: T, target: T) => boolean|null = defaultCheckForValid, 
-	updateCurrent: (current: T, candidate: C) => T = defaultUpdateCurrent
+	updateCurrent: (current: T, candidate: C, temp: C[]) => T = defaultUpdateCurrent
 ) => {
 	const temp: C[] = []; // temp solutions that gets backtracked over
 	const valids: C[][] = []; // working solutions added here
@@ -50,7 +50,7 @@ export const backtracker = <C, T>(
 		}
 
 		temp.push(candidates[idx]);
-		backtrack(idx, updateCurrent(current, candidates[idx]));
+		backtrack(idx, updateCurrent(current, candidates[idx], temp));
 		temp.pop();
 		backtrack(idx+1, initial);
 	};
