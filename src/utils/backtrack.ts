@@ -52,7 +52,7 @@ export const backtracker = <C, T>(
 		temp.push(candidates[idx]);
 		backtrack(idx, updateCurrent(current, candidates[idx], temp));
 		temp.pop();
-		backtrack(idx+1, initial);
+		backtrack(idx+1, current);
 	};
 
 	backtrack(0, initial);
