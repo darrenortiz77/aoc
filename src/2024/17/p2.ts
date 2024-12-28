@@ -2,24 +2,24 @@
  * https://adventofcode.com/2024/day/17
  *
  * General solution:
- * Just follow the thoroughly complicated instructions. Nothing much to say about the program itself though.
+ * Black magic. Needed a TON of help from Reddit.
  */
 
 import AOCBase from "../../AOCBase";
 
 export default class Solution implements AOCBase {
-  readonly sampleInput = `Register A: 729
+  readonly sampleInput = `Register A: 2024
 Register B: 0
 Register C: 0
 
-Program: 0,1,5,4,3,0`;
+Program: 0,3,5,4,3,0`;
 
   public parseInput(input?: string) {
     if (!input) {
       input = this.sampleInput;
     }
 
-    const registers = new Array(3);
+    const registers: number[] = new Array(3);
     let program: number[] = [];
 
     input.split('\n').forEach((line, i) => {
@@ -37,57 +37,77 @@ Program: 0,1,5,4,3,0`;
     const performanceStart = performance.now();
 
     const {registers, program} = this.parseInput(input);
-    
-    const originalA = registers[0];
-    const outputs: number[] = [];
 
-    for (let i=0; i < program.length; i += 2) {
-      const opCode = program[i];
-      const operand = program[i+1];
+    let a = 0;
+    let result: number[] = [];
 
-      switch (opCode) {
-        case 0: {
-          adv(operand, registers);
-          break;
-        }
-        case 1: {
-          bxl(operand, registers);
-          break;
-        }
-        case 2: {
-          bst(operand, registers);
-          break;
-        }
-        case 3: {
-          if (registers[0] !== 0) {
-            i = operand - 2;
-          }
-          break;
-        }
-        case 4: {
-          bxc(registers);
-          break;
-        }
-        case 5: {
-          out(operand, registers, outputs);
-          break;
-        }
-        case 6: {
-          bdv(operand, registers);
-          break;
-        }
-        case 7: {
-          cdv(operand, registers);
-          break;
-        }
-      }
+    for (let i=program.length-1; i >= 0; i--) {
+      a *= 8;
+
+      const programToMatch = program.slice(i).join(',');
+      let shortCircuit = 0;
+      
+      do {
+        result = runProgram([a, 0, 0], program);
+        a++;
+        shortCircuit++;
+      } while (result.join(',') !== programToMatch)
+      a--;
     }
 
     return {
       performance: performance.now() - performanceStart, 
-      result: outputs.join(',')
+      result: `${a} = ${result}`
     }
   }
+}
+
+function runProgram(registers: number[], program: number[]) {
+  const outputs: number[] = [];
+
+  for (let i=0; i < program.length; i += 2) {
+    const opCode = program[i];
+    const operand = program[i+1];
+
+    switch (opCode) {
+      case 0: {
+        adv(operand, registers);
+        break;
+      }
+      case 1: {
+        bxl(operand, registers);
+        break;
+      }
+      case 2: {
+        bst(operand, registers);
+        break;
+      }
+      case 3: {
+        if (registers[0] !== 0) {
+          i = operand - 2;
+        }
+        break;
+      }
+      case 4: {
+        bxc(registers);
+        break;
+      }
+      case 5: {
+        out(operand, registers, outputs);
+        break;
+      }
+      case 6: {
+        bdv(operand, registers);
+        break;
+      }
+      case 7: {
+        cdv(operand, registers);
+        break;
+      }
+    }
+  }
+
+  return outputs;
 }
 
 function adv(operand: number, registers: number[]) {
