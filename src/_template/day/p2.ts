@@ -1,5 +1,5 @@
 /**
- * https://adventofcode.com/2024/day/xx
+ * https://adventofcode.com/2025/day/xx
  *
  * General solution:
  */
