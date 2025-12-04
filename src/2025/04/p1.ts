@@ -2,6 +2,7 @@
  * https://adventofcode.com/2025/day/04
  *
  * General solution:
+ * - basic look around
  */
 
 import AOCBase from "../../AOCBase";

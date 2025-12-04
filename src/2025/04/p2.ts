@@ -2,6 +2,11 @@
  * https://adventofcode.com/2025/day/04
  *
  * General solution:
+ * - loop over all cells and create map of cell: neighbors
+ * - as you create the map, start a stack with a list of cells that can be removed
+ * - while the stack isn't empty, remove rolls, but as you do, check its neighbours to see if this roll was a neighbour
+ * - if the neighbour's list of neighbour's drops below 4, add it to the stack
+ * - keep going until stack is empty
  */
 
 import AOCBase from "../../AOCBase";
@@ -36,47 +41,63 @@ export default class Solution implements AOCBase {
     const numCols = parsed[0].length;
     const numRows = parsed.length;
 
-    let removedRoll = false;
-    let keepGoing = true;
+    const rolls = new Map<string, Set<string>>();
+    const stack: string[] = [];
 
-    while (keepGoing) {
-      removedRoll = false;
-      
-      parsed.forEach((rowStr, row) => {
-        for (let col = 0; col < numCols; col++) {
-          const cellVal = rowStr.charAt(col);
-          
-          if (cellVal !== '@') {
+    parsed.forEach((rowStr, row) => {
+      for (let col = 0; col < numCols; col++) {
+        const cellVal = rowStr.charAt(col);
+        
+        if (cellVal !== '@') {
+          continue;
+        }
+
+        const coords = [[row-1, col], [row-1, col+1], [row, col+1], [row+1, col+1], [row+1, col], [row+1, col-1], [row, col-1], [row-1, col-1]];
+        const neighbors = new Set<string>();
+
+        for (let i=0; i < coords.length; i++) {
+          const [r, c] = coords[i];
+
+          if (r < 0 || r >= numRows || c < 0 || c >= numCols) {
             continue;
-          }
-
-          let numRolls = 0;
-          const coords = [[row-1, col], [row-1, col+1], [row, col+1], [row+1, col+1], [row+1, col], [row+1, col-1], [row, col-1], [row-1, col-1]];
-
-          for (let i=0; i < coords.length; i++) {
-            if (numRolls >= 4) {
-              break;
-            }
-
-            const [r, c] = coords[i];
-
-            if (r < 0 || r >= numRows || c < 0 || c >= numCols) {
-              continue;
-            } else if (parsed[r].charAt(c) === '@') {
-              numRolls++;
-            }
-          }
-
-          if (numRolls < 4) {
-            parsed[row] = `${parsed[row].substring(0, col)}.${parsed[row].substring(col+1)}`;
-            removedRoll = true;
-            result++;
+          } else if (parsed[r].charAt(c) === '@') {
+            neighbors.add(`${r}_${c}`);
           }
         }
-      });
 
-      if (!removedRoll) {
-        keepGoing = false;
+        rolls.set(`${row}_${col}`, neighbors);
+
+        if (neighbors.size < 4) {
+          stack.push(`${row}_${col}`);
+        }
+      }
+    });
+
+    while (stack.length > 0) {
+      const roll = stack.pop()!;
+      removeRoll(roll);
+    }
+
+    function removeRoll(roll: string) {
+      const [row, col] = roll.split('_').map(s => +s);
+
+      if (parsed[row].charAt(col) === '@') {
+        parsed[row] = `${parsed[row].substring(0, col)}.${parsed[row].substring(col+1)}`;
+        result++;
+
+        const neighbors = rolls.get(roll);
+
+        neighbors?.forEach(neighbor => {
+          const neighborsNeighbors = rolls.get(neighbor);
+
+          if (neighborsNeighbors?.has(roll)) {
+            neighborsNeighbors.delete(roll);
+
+            if (neighborsNeighbors.size < 4) {
+              stack.push(neighbor);
+            }
+          }
+        });
       }
     }
 
