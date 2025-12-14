@@ -2,7 +2,13 @@
  * https://adventofcode.com/2025/day/10
  *
  * General solution:
- * - BFS
+ * - most people use linear algebra...which I don't know
+ * - but I found the following solution that is more just "logic" based
+ * - https://www.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/?share_id=TwheJWBTKk7Scx3dO--dx&utm_content=2&utm_medium=android_app&utm_name=androidcss&utm_source=share&utm_term=1
+ * - however, even after trying to integrate the logic I still couldn't get the memoization to work as expected,
+ * - so although I think it's generating the right answer, I'll never truly know since I'm not entering it in AOC to find out.
+ * - I don't deserve the star for this one because I barely understand the solution and needed AI to help get it working.
+ * - :(
  */
 
 import AOCBase from "../../AOCBase";
@@ -20,83 +26,98 @@ export default class Solution implements AOCBase {
     return input.split('\n');
   }
 
-  public solve(input?: string) {    
+  public solve(input?: string) {
     const performanceStart = performance.now();
 
     const parsed = this.parseInput(input);
     let result = 0;
 
-    // logic here
-    parsed.forEach(line => {
-      const goalString = line.match(/\{(.+)\}/)![1];
-      const goal = goalString.split(',').map(s => +s);
-      const beginState: number[] = new Array(goal.length).fill(0);
-      const buttons = [...line.matchAll(/\((.+?)\)/g)].map(result => result[1].split(','));
+    const memo = new Map<string, number>();
 
-      let numPresses = 0;
-      let endStateFound = false;
-      let states = [beginState];
+    // Find all button combos that achieve target parity (Part 1 logic)
+    function findParityCombos(buttons: number[][], targetParity: boolean[]): number[][][] {
+      const n = buttons.length;
+      const m = targetParity.length;
+      const results: number[][][] = [];
 
-      while (!endStateFound && numPresses < 10000) {
-        numPresses++;
+      // Try all 2^n subsets of buttons
+      for (let mask = 0; mask < (1 << n); mask++) {
+        const parity = new Array(m).fill(false);
+        const combo: number[][] = [];
 
-        const newStates: number[][] = [];
-
-        for (let i = 0; i < states.length; i++) {
-          for (let b = 0; b < buttons.length; b++) {
-            const thisState = pushButton([...states[i]], buttons[b]);
-
-            // check for overage
-            let valid = true;
-            for (let n=0; n < thisState.length; n++) {
-              if (thisState[n] > goal[n]) {
-                valid = false;
-                break;
-              }
-            }
-            
-            if (i % 100000 === 0) wait();
-
-            if (!valid) {
-              continue;
-            }
-
-            newStates.push(thisState);
-
-            if (thisState.join(',') === goalString) {
-              console.log(goalString, '==', numPresses, 'presses');
-              endStateFound = true;
-              result += numPresses;
-              break;
-            }
-          }
-
-          if (endStateFound) {
-            break;
+        for (let i = 0; i < n; i++) {
+          if (mask & (1 << i)) {
+            combo.push(buttons[i]);
+            buttons[i].forEach(idx => parity[idx] = !parity[idx]);
           }
         }
 
-        const uniq = new Set(newStates.map(a => a.join(',')));
-        const uniq2 = [...uniq].map(a => a.split(',').map(s => +s));
-
-        states = uniq2;
+        // Check if this combo achieves target parity
+        if (parity.every((p, i) => p === targetParity[i])) {
+          results.push(combo);
+        }
       }
+
+      return results;
+    }
+
+    function solveBifurcate(buttons: number[][], goal: number[]): number {
+      const key = goal.join(',');
+
+      // Base case: all zeros
+      if (goal.every(n => n === 0)) {
+        return 0;
+      }
+
+      // Check memo
+      if (memo.has(key)) {
+        return memo.get(key)!;
+      }
+
+      // Get target parity - we need to toggle positions where goal is ODD
+      const targetParity = goal.map(n => n % 2 === 1);
+
+      // Find all button combos that achieve this parity
+      const validCombos = findParityCombos(buttons, targetParity);
+
+      let minPresses = Number.POSITIVE_INFINITY;
+
+      for (const combo of validCombos) {
+        // Apply this combo: press each button in combo once
+        const newGoal = [...goal];
+        for (const btn of combo) {
+          btn.forEach(idx => newGoal[idx] -= 1);
+        }
+
+        // Check for negative values (invalid path)
+        if (newGoal.some(n => n < 0)) continue;
+
+        // Now all values should be even - divide by 2
+        const halved = newGoal.map(n => n / 2);
+
+        // Recurse!
+        const subResult = solveBifurcate(buttons, halved);
+        if (subResult < Number.POSITIVE_INFINITY) {
+          // Cost = 2 * subResult + combo.length
+          minPresses = Math.min(minPresses, 2 * subResult + combo.length);
+        }
+      }
+
+      memo.set(key, minPresses);
+      return minPresses;
+    }
+
+    // Process each line
+    parsed.forEach(line => {
+      const goal = line.match(/\{(.+)\}/)![1].split(',').map(Number);
+      const buttons = [...line.matchAll(/\((.+?)\)/g)].map(r => r[1].split(',').map(Number));
+
+      memo.clear(); // Clear memo for each machine (different buttons)
+      result += solveBifurcate(buttons, goal);
     });
 
-    function pushButton(thisState: number[], button: string[]) {
-      button.forEach(lightIdx => {
-        thisState[+lightIdx] = thisState[+lightIdx] + 1;
-      });
-
-      return thisState;
-    }
-
-    function wait(ms: number = 0) {
-      setTimeout(() => {}, ms);
-    }
-
     return {
-      performance: performance.now() - performanceStart, 
+      performance: performance.now() - performanceStart,
       result
     }
   }
