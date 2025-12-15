@@ -5,11 +5,6 @@
  */
 
 import AOCBase from "../../AOCBase";
-import { backtracker } from "../../utils/backtrack";
-
-type Bucket = {
-  value: number;
-}
 
 export default class Solution implements AOCBase {
   readonly sampleInput = `20
@@ -23,60 +18,38 @@ export default class Solution implements AOCBase {
       input = this.sampleInput;
     }
     
-    const buckets = new Set<Bucket>();
-    input.split('\n').forEach(n => {
-      buckets.add({value: +n});
-    });
-    return buckets;
+    return input.split('\n').map((bucket, i) => `${i}_${bucket}`);
   }
 
   public solve(input?: string) {    
     const performanceStart = performance.now();
 
     const buckets = this.parseInput(input);
-    const valids = new Set<Set<Bucket>>();
-    const target = 150;
+    const valids = new Set<string>();
+    const target = !input ? 25 : 150;
 
-    const dfs = (temp: Set<Bucket>, remaining: Set<Bucket>) => {
-      const total = [...temp].reduce((sum, bucket) => sum + bucket.value, 0);
+    const dfs = (temp: string[], idx: number) => {
+      const total = [...temp].reduce((sum, bucket) => sum + Number(bucket.split('_')[1]), 0);
 
       if (total > target) {
         return;
       } else if (total === target) {
-        valids.add(temp);
+        temp.sort((a, b) => Number(a.split('_')[0]) - Number(b.split('_')[0]));
+        valids.add(temp.join(','));
         return;
       }
 
-      for (const bucket of remaining) {
-        const remainingClone = new Set(remaining);
-        remainingClone.delete(bucket);
-        const tempClone = new Set(temp);
-        tempClone.add(bucket);
-        dfs(tempClone, remainingClone);
+      for (let i=idx+1; i < buckets.length; i++) {
+        const bucket = buckets[i];
+        dfs([...temp, bucket], i);
       }
     }
     
-    dfs(new Set(), buckets);
+    dfs([], -1);
 
     return {
       performance: performance.now() - performanceStart, 
       result: valids.size
     }
   }
-}
-
-function isNotDupe(buckets: Set<Bucket>, valids: Set<Set<Bucket>>) {
-  for (const validSet of valids) {
-    const validClone = new Set(validSet);
-
-    for (const bucket of buckets) {
-      validClone.delete(bucket);
-    }
-
-    if (validClone.size === 0) {
-      return false;
-    }
-  }
-
-  return true;
 }
